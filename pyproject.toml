@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "todolistapi"
+version = "0.1.0"
+description = "todo list tutorial task for chapter 4"
+authors = ["Yeahjun Heo"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.30.6"}
+python-multipart = "^0.0.10"
+jinja2 = "^3.1.4"
+sqlalchemy = "^2.0.35"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
