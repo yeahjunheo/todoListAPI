@@ -1,6 +1,4 @@
-from email.policy import default
-from sqlalchemy import Boolean, Column, Integer, String, Date
-from sqlalchemy import Relationship
+from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
 from database import Base
 
 
@@ -13,9 +11,10 @@ class Todo(Base):
     due_date = Column(Date)
     memo = Column(String(500))
 
+
 class Steps(Base):
     __tablename__ = "steps"
-    
+
     id = Column(Integer, primary_key=True)
-    todo_id = 
+    todo_id = Column(Integer, ForeignKey("todos.id", ondelete="CASCADE"))
     step = Column(String(200))
