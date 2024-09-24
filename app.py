@@ -11,7 +11,7 @@ API functions
 8. display the tasks in order of oldest to newest (deadline)
 """
 
-from fastapi import FastAPI, Depends, Request, Form, status
+from fastapi import FastAPI, Depends, Request, Form, status, datetime
 
 from starlette.responses import RedirectResponse
 
@@ -33,13 +33,17 @@ def get_db():
 
 
 @app.get("/")
-async def home(req: Request, db: Session = Depends(get_db)):
-    todos = db.query(models.Todo).all()
+def home(req: Request, db: Session = Depends(get_db)):
+    todos = db.query(models.Todo).sort_by(models.Todo.due_date).all()
     return {"request": req, "todos": todos}
 
 
 @app.post("/add")
-def add(req: Request, title: str = Form(...), db: Session = Depends(get_db)):
+def add_task(
+    req: Request,
+    title: str = Form(...),
+    db: Session = Depends(get_db)
+):
     new_todo = models.Todo(title=title)
     db.add(new_todo)
     db.commit()
@@ -48,7 +52,7 @@ def add(req: Request, title: str = Form(...), db: Session = Depends(get_db)):
 
 
 @app.get("/update/status/{todo_id}")
-def add(req: Request, todo_id: int, db: Session = Depends(get_db)):
+def update_status(req: Request, todo_id: int, db: Session = Depends(get_db)):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
     todo.complete = not todo.complete
     db.commit()
@@ -56,10 +60,48 @@ def add(req: Request, todo_id: int, db: Session = Depends(get_db)):
     return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
 
 
-# gets date from user and updates it to the following task
 @app.get("/update/date/{todo_id}")
+def update_date(
+    req: Request,
+    todo_id: int,
+    due_date: datetime.date,
+    db: Session = Depends(get_db)
+):
+    todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    todo.due_date = due_date
+    db.commit()
+    url = app.url_path_for("home")
+    return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
+
+
 @app.get("/update/memo/{todo_id}")
-@app.get("/update/steps/{todo_id}")
+def update_memo(
+    req: Request,
+    todo_id: int,
+    memo: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
+    todo.memo = memo
+    db.commit()
+    url = app.url_path_for("home")
+    return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.post("/update/steps/{todo_id}")
+def update_steps(
+    req: Request,
+    todo_id: int,
+    step: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    new_step = models.Steps(todo_id=todo_id, step=step)
+    db.add(new_step)
+    db.commit()
+    url = app.url_path_for("home")
+    return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
+
+
 @app.get("/delete/{todo_id}")
 def add(req: Request, todo_id: int, db: Session = Depends(get_db)):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
