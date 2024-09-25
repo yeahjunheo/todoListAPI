@@ -22,8 +22,8 @@ class Todo(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(100))
     complete = Column(Boolean, default=False)
-    due_date = Column(Date)
-    memo = Column(String(500))
+    due_date = Column(Date, default=None)
+    memo = Column(String(200))
 
 
 class Steps(Base):
