@@ -13,6 +13,7 @@ steps should also be deleted. Hence, the cascade.
 """
 
 from sqlalchemy import Boolean, Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 
 
@@ -23,7 +24,8 @@ class Todo(Base):
     title = Column(String(100))
     complete = Column(Boolean, default=False)
     due_date = Column(Date, default=None)
-    memo = Column(String(200))
+    memo = Column(String(100))
+    steps = relationship("Steps", backref="todo", cascade="all, delete-orphan")
 
 
 class Steps(Base):
@@ -31,4 +33,4 @@ class Steps(Base):
 
     id = Column(Integer, primary_key=True)
     todo_id = Column(Integer, ForeignKey("todos.id", ondelete="CASCADE"))
-    step = Column(String(200))
+    step = Column(String(100))
