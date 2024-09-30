@@ -10,7 +10,8 @@ class TodoCreate(Todo):
     pass
 
 
-class TodoUpdate(Todo):
+class TodoUpdate(BaseModel):
+    task: str | None = None
     status: bool = False
     due_date: date | None = None
     memo: str | None = None

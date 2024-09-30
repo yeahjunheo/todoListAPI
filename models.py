@@ -12,7 +12,7 @@ class Todo(Base):
     due_date = Column(Date, default=None)
     memo = Column(String(100))
 
-    steps = relationship("Steps", backref="todo", cascade="all, delete-orphan")
+    steps = relationship("Steps", back_populates="todo", cascade="all, delete-orphan", lazy="joined")
 
 
 class Steps(Base):
@@ -22,3 +22,5 @@ class Steps(Base):
     todo_id = Column(Integer, ForeignKey("todos.id", ondelete="CASCADE"))
     status = Column(Boolean, default=False)
     step = Column(String(100))
+
+    todo = relationship("Todo", back_populates="steps")

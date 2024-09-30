@@ -69,10 +69,10 @@ def delete_task(todo_id: int, db: Session = Depends(get_db)):
 @app.post("/add/steps/{todo_id}")
 def add_steps(todo_id: int, step: schemas.StepCreate, db: Session = Depends(get_db)):
     todo = db.query(models.Todo).filter(models.Todo.id == todo_id).first()
-    
+
     if not todo:
         raise HTTPException(status_code=404, detail="Task not found")
-    
+
     new_step = models.Steps(todo_id=todo_id, step=step.step)
     db.add(new_step)
     db.commit()
@@ -115,7 +115,7 @@ def delete_step(step_id: int, db: Session = Depends(get_db)):
     db.delete(step)
     db.commit()
     steps = db.query(models.Steps).filter(models.Steps.todo_id == todo.id).all()
-    result = {"task": todo, "step_id": steps}
+    result = {"task": todo, "step": steps}
     return result
 
 
